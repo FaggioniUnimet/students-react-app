@@ -1,0 +1,49 @@
+plugins {
+  id "com.moowork.node" version "1.2.0"
+  id "at.phatbl.shellexec" version "1.5.2"
+}
+node {
+	download = true
+	version = "14.18.2"
+	npmVersion = "6.14.15"
+}
+
+import at.phatbl.shellexec.ShellExec
+
+//declare a build task
+task build
+
+
+task zip(type: Zip) {
+	from ('.') {
+		include "*"
+		include "app/**"
+		include "bootstrap/**"
+		include "config/**"
+		include "database/**"
+		include "node_modules/**"
+		include "public/**"
+		include "resources/**"
+		include "routes/**"
+		include "storage/**"
+		include "tests/**"
+		include "vendor/**"
+	}
+	destinationDir(file("dist"))
+    baseName "public-styles"
+}
+
+task runMix(type: NpmTask) {
+  args = ['run', 'prod']
+}
+
+task installPHPDeps(type: ShellExec) {
+    command "composer install"
+}
+//declare task dependencies
+build.dependsOn zip
+zip.dependsOn runMix
+runMix.dependsOn npmInstall
+
+
+
